@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Variable Pay Calculator – Free HR Tool</title>
+<meta name="description" content="Free Variable Pay Calculator for employees and HR professionals. Estimate your annual bonus transparently with step-by-step breakdown.">
+<style>
+:root {
+  --green:#16a34a;--green-l:#dcfce7;--green-b:#86efac;
+  --amber:#d97706;--amber-l:#fef3c7;--amber-b:#fcd34d;
+  --red:#dc2626;--red-l:#fee2e2;--red-b:#fca5a5;
+  --blue:#2563eb;--blue-l:#eff6ff;--blue-b:#93c5fd;
+  --indigo:#4f46e5;
+  --gray:#6b7280;--gray-l:#f9fafb;--border:#e5e7eb;
+  --text:#111827;--text2:#374151;--text3:#6b7280;
+  --r:12px;--sh:0 1px 4px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:var(--text);min-height:100vh;-webkit-text-size-adjust:100%;}
+
+/* ── HERO HEADER ── */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 55%,#2563eb 100%);color:white;padding:28px 16px 22px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(99,102,241,.3) 0%,transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;position:relative;}
+.hero h1{font-size:clamp(1.25rem,5.5vw,1.8rem);font-weight:800;letter-spacing:-.5px;line-height:1.2;position:relative;}
+.hero h1 span{color:#93c5fd;}
+.hero-sub{font-size:.85rem;opacity:.8;margin-top:8px;line-height:1.5;position:relative;}
+.hero-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:14px;position:relative;}
+.hero-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 11px;font-size:.72rem;font-weight:500;}
+
+/* ── TAB NAV ── */
+.tab-nav{display:flex;background:#0f172a;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.tab-btn{flex:1;padding:13px 4px 11px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;border-bottom:3px solid transparent;touch-action:manipulation;}
+.tab-btn .ti{font-size:1.05rem;}
+.tab-btn.active{color:white;border-bottom-color:#60a5fa;}
+
+/* ── LAYOUT ── */
+.container{max-width:740px;margin:0 auto;padding:16px 12px 100px;}
+.tab-pane{display:none;}.tab-pane.active{display:block;}
+
+/* ── CARD ── */
+.card{background:white;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:14px;overflow:hidden;}
+.card-header{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:white;background:var(--blue);flex-shrink:0;}
+.badge.green{background:var(--green);}
+.card-header h2{font-size:.9375rem;font-weight:700;color:var(--text);}
+.card-header .sub{font-size:.75rem;color:var(--text3);font-weight:400;margin-left:auto;}
+.card-body{padding:16px;}
+
+/* ── INDUSTRY SELECTOR ── */
+.industry-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;}
+@media(max-width:400px){.industry-grid{grid-template-columns:repeat(2,1fr);}}
+.ind-btn{padding:9px 6px;border:1.5px solid var(--border);border-radius:10px;background:white;cursor:pointer;text-align:center;transition:all .15s;touch-action:manipulation;}
+.ind-btn:active,.ind-btn.active{border-color:var(--blue);background:var(--blue-l);}
+.ind-btn .ind-icon{font-size:1.3rem;display:block;}
+.ind-btn .ind-label{font-size:.68rem;font-weight:600;color:var(--text2);margin-top:3px;line-height:1.2;}
+.ind-btn.active .ind-label{color:var(--blue);}
+
+/* ── GRADE SELECTOR ── */
+.grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.grade-card{border:2px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .2s;background:white;touch-action:manipulation;}
+.grade-card:active,.grade-card.active{border-color:var(--blue);background:var(--blue-l);}
+.grade-card .gc-icon{font-size:1.5rem;display:block;margin-bottom:4px;}
+.grade-card .gc-title{font-size:.8rem;font-weight:700;color:var(--text);}
+.grade-card.active .gc-title{color:var(--blue);}
+.grade-card .gc-desc{font-size:.67rem;color:var(--text3);margin-top:2px;line-height:1.3;}
+.grade-card .gc-vp{font-size:.7rem;font-weight:700;color:white;background:var(--blue);border-radius:20px;padding:2px 8px;margin-top:5px;display:inline-block;}
+.grade-card.active .gc-vp{background:var(--indigo);}
+
+/* ── FORM FIELDS ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.grid2{grid-template-columns:1fr;gap:10px;}}
+.field{display:flex;flex-direction:column;gap:5px;}
+label{font-size:.8rem;font-weight:600;color:var(--text2);}
+input[type="number"],select,input[type="text"]{padding:11px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:1rem;color:var(--text);background:white;width:100%;-webkit-appearance:none;appearance:none;transition:border-color .15s;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+.hint{font-size:.72rem;color:var(--text3);margin-top:1px;line-height:1.4;}
+.hint.warn{color:#b45309;}
+.hint.good{color:var(--green);}
+
+/* ── TOGGLE ── */
+.toggle-group{display:flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.toggle-group button{flex:1;padding:11px 6px;border:none;background:white;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--gray);transition:all .15s;touch-action:manipulation;}
+.toggle-group button.active{background:var(--blue);color:white;}
+
+/* ── RANGE SLIDER ── */
+.slider-wrap{display:flex;flex-direction:column;gap:6px;}
+.slider-header{display:flex;justify-content:space-between;align-items:center;}
+.slider-val{font-size:1rem;font-weight:800;color:var(--blue);min-width:52px;text-align:right;}
+input[type=range]{width:100%;height:6px;border-radius:3px;-webkit-appearance:none;appearance:none;outline:none;border:none;cursor:pointer;padding:0;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--blue);cursor:pointer;border:3px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.slider-marks{display:flex;justify-content:space-between;font-size:.65rem;color:var(--text3);padding:0 2px;}
+.perf-zone{height:4px;border-radius:2px;margin-top:4px;background:linear-gradient(to right,#ef4444 0%,#ef4444 17%,#f59e0b 17%,#f59e0b 40%,#22c55e 40%,#22c55e 80%,#10b981 80%);position:relative;}
+.zone-labels{display:flex;font-size:.6rem;margin-top:2px;}
+.zone-labels span{color:var(--text3);}
+
+/* ── CALC BUTTON ── */
+.calc-btn{width:100%;padding:15px;background:linear-gradient(135deg,#0f172a,#2563eb);color:white;border:none;border-radius:var(--r);font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:.2px;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:8px;}
+.calc-btn:active{opacity:.88;}
+
+/* ── OUTPUT ── */
+#output{display:none;}
+.summary-banner{border-radius:var(--r);padding:20px 16px;margin-bottom:14px;text-align:center;}
+.summary-banner.green{background:var(--green-l);border:2px solid var(--green-b);}
+.summary-banner.amber{background:var(--amber-l);border:2px solid var(--amber-b);}
+.summary-banner.red{background:var(--red-l);border:2px solid var(--red-b);}
+.vp-amount{font-size:clamp(1.8rem,8vw,2.4rem);font-weight:900;letter-spacing:-1px;}
+.summary-banner.green .vp-amount{color:var(--green);}
+.summary-banner.amber .vp-amount{color:var(--amber);}
+.summary-banner.red .vp-amount{color:var(--red);}
+.vp-label{font-size:.82rem;margin-top:4px;color:var(--text2);}
+.vp-pct{font-size:.9rem;font-weight:700;margin-top:10px;}
+.vp-meta{display:flex;justify-content:center;gap:20px;margin-top:12px;flex-wrap:wrap;}
+.vp-meta-item{text-align:center;}
+.vp-meta-item .mval{font-size:1rem;font-weight:800;color:var(--text);}
+.vp-meta-item .mlbl{font-size:.68rem;color:var(--text3);margin-top:1px;}
+
+/* ── BREAKDOWN ── */
+.table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.table th{text-align:left;padding:8px 12px;background:var(--gray-l);color:var(--text3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);}
+.table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle;line-height:1.4;}
+.table tr:last-child td{border-bottom:none;}
+.val{font-weight:700;color:var(--text);text-align:right;white-space:nowrap;}
+.chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:.73rem;font-weight:700;}
+.chip-green{background:var(--green-l);color:var(--green);}
+.chip-amber{background:var(--amber-l);color:var(--amber);}
+.chip-red{background:var(--red-l);color:var(--red);}
+.chip-blue{background:var(--blue-l);color:var(--blue);}
+.sect-row td{background:#f8fafc;padding:6px 12px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#64748b;}
+.wt-bar{display:flex;gap:3px;height:8px;border-radius:4px;overflow:hidden;margin-top:6px;}
+.wt-seg{height:100%;}
+.factor-pill{display:inline-block;padding:4px 12px;border-radius:99px;font-weight:800;font-size:.88rem;}
+
+/* ── ZERO NOTICE ── */
+.zero-notice{background:var(--red-l);border:2px solid var(--red-b);border-radius:var(--r);padding:20px 16px;text-align:center;}
+.zero-notice h3{color:var(--red);font-size:1rem;font-weight:800;}
+.zero-notice p{color:#7f1d1d;font-size:.85rem;margin-top:6px;line-height:1.5;}
+
+/* ── MARKET CONTEXT BOX ── */
+.market-box{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:var(--r);padding:14px 16px;margin-bottom:14px;}
+.market-box h4{font-size:.8rem;font-weight:700;color:#0369a1;margin-bottom:8px;}
+.market-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:.78rem;}
+.market-row:last-child{border-bottom:none;}
+.market-row .ml{color:var(--text2);}
+.market-row .mr{font-weight:700;color:#0369a1;}
+
+/* ── SHARE/RESET BUTTONS ── */
+.action-row{display:flex;gap:8px;margin-top:4px;}
+.reset-btn{flex:1;padding:12px;background:white;border:1.5px solid var(--border);border-radius:var(--r);font-size:.875rem;font-weight:600;color:var(--text2);cursor:pointer;touch-action:manipulation;}
+.share-btn{flex:1;padding:12px;background:linear-gradient(135deg,#0077b5,#0a66c2);border:none;border-radius:var(--r);font-size:.875rem;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;}
+
+/* ── DISCLAIMER ── */
+.disclaimer{background:var(--blue-l);border:1px solid var(--blue-b);border-radius:8px;padding:12px 14px;font-size:.76rem;color:#1e40af;line-height:1.55;margin-top:12px;}
+.disclaimer strong{display:block;margin-bottom:3px;font-size:.78rem;}
+
+/* ── INFO CALLOUT ── */
+.info-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#78350f;line-height:1.5;margin-bottom:14px;}
+.info-box b{color:#92400e;}
+
+/* ══════════════ CHAT ══════════════ */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 170px);min-height:420px;}
+.chat-messages{flex:1;overflow-y:auto;padding:10px 0;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;}
+.msg{display:flex;gap:8px;align-items:flex-end;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.msg.bot{justify-content:flex-start;}
+.msg.user{justify-content:flex-end;}
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;margin-bottom:2px;background:linear-gradient(135deg,#0f172a,#2563eb);color:white;}
+.bubble{padding:10px 13px;border-radius:14px;font-size:.875rem;line-height:1.6;max-width:80%;word-wrap:break-word;}
+.bot .bubble{background:white;border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text);}
+.user .bubble{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:white;border-bottom-right-radius:4px;}
+.bubble b,.bubble strong{font-weight:700;}
+.bubble ul{margin:6px 0 2px 16px;}
+.bubble ul li{margin-bottom:3px;}
+.bubble .tag{display:inline-block;background:#e0f2fe;color:#0369a1;border-radius:4px;padding:1px 6px;font-size:.72rem;font-weight:700;}
+
+/* Suggestion chips */
+.sug-row{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 6px;}
+.sug-btn{padding:7px 13px;background:white;border:1.5px solid var(--blue-b);border-radius:20px;font-size:.77rem;color:var(--blue);cursor:pointer;transition:all .15s;touch-action:manipulation;font-weight:500;}
+.sug-btn:active{background:var(--blue-l);}
+
+/* Typing */
+.typing-dot{display:inline-flex;gap:4px;padding:10px 14px;background:white;border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px;}
+.dot{width:7px;height:7px;border-radius:50%;background:#93c5fd;animation:blink .9s infinite;}
+.dot:nth-child(2){animation-delay:.18s;}.dot:nth-child(3){animation-delay:.36s;}
+@keyframes blink{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+
+/* Chat input */
+.chat-input-row{display:flex;gap:8px;padding:10px 0 2px;border-top:1px solid var(--border);margin-top:8px;}
+.chat-input-row input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:24px;font-size:.9rem;outline:none;-webkit-appearance:none;}
+.chat-input-row input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.send-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1e3a8a,#2563eb);border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;}
+.send-btn svg{width:18px;height:18px;}
+
+/* Scrollbars */
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;font-size:.72rem;color:#94a3b8;padding:8px 0 0;border-top:1px solid var(--border);margin-top:10px;}
+.footer a{color:var(--blue);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <div class="hero-badge">🎯 Free HR Tool</div>
+  <h1>Variable Pay <span>Calculator</span></h1>
+  <p class="hero-sub">Know exactly how your bonus is calculated — transparent, step-by-step.<br>Used by employees &amp; HR professionals across industries.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">✅ 100% Free</span>
+    <span class="hero-pill">📱 Mobile Friendly</span>
+    <span class="hero-pill">🔒 No Data Stored</span>
+    <span class="hero-pill">🤖 AI FAQ Chatbot</span>
+  </div>
+</div>
+
+<!-- ══════════ TAB NAV ══════════ -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('calc')" id="tabnav-calc"><span class="ti">🧮</span>Calculator</button>
+  <button class="tab-btn" onclick="switchTab('guide')" id="tabnav-guide"><span class="ti">📖</span>How It Works</button>
+  <button class="tab-btn" onclick="switchTab('faq')" id="tabnav-faq"><span class="ti">💬</span>Ask AI</button>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════
+     TAB 1 — CALCULATOR
+══════════════════════════════ -->
+<div class="tab-pane active" id="tab-calc">
+
+  <div class="info-box">
+    💡 <b>How to use:</b> Select your industry & level, enter your pay and performance scores, and get a full breakdown of your estimated variable pay instantly.
+  </div>
+
+  <!-- STEP 1: Industry -->
+  <div class="card">
+    <div class="card-header"><div class="badge">1</div><h2>Select Your Industry</h2><span class="sub">Sets market-standard VP%</span></div>
+    <div class="card-body">
+      <div class="industry-grid">
+        <button class="ind-btn active" onclick="setIndustry('general')" id="ind-general"><span class="ind-icon">🏭</span><span class="ind-label">General / Manufacturing</span></button>
+        <button class="ind-btn" onclick="setIndustry('it')" id="ind-it"><span class="ind-icon">💻</span><span class="ind-label">IT / Software</span></button>
+        <button class="ind-btn" onclick="setIndustry('bfsi')" id="ind-bfsi"><span class="ind-icon">🏦</span><span class="ind-label">BFSI / Finance</span></button>
+        <button class="ind-btn" onclick="setIndustry('pharma')" id="ind-pharma"><span class="ind-icon">💊</span><span class="ind-label">Pharma / Healthcare</span></button>
+        <button class="ind-btn" onclick="setIndustry('fmcg')" id="ind-fmcg"><span class="ind-icon">🛒</span><span class="ind-label">FMCG / Retail</span></button>
+        <button class="ind-btn" onclick="setIndustry('infra')" id="ind-infra"><span class="ind-icon">🏗️</span><span class="ind-label">Infra / Construction</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Grade -->
+  <div class="card">
+    <div class="card-header"><div class="badge">2</div><h2>Select Your Level</h2><span class="sub">Determines VP target %</span></div>
+    <div class="card-body">
+      <div class="grade-grid">
+        <div class="grade-card active" onclick="setGrade('junior')" id="gc-junior">
+          <span class="gc-icon">🌱</span>
+          <div class="gc-title">Junior Level</div>
+          <div class="gc-desc">Executives, Associates, Analysts (0–5 yrs)</div>
+          <span class="gc-vp" id="vp-junior-badge">VP: 10%</span>
+        </div>
+        <div class="grade-card" onclick="setGrade('middle')" id="gc-middle">
+          <span class="gc-icon">🚀</span>
+          <div class="gc-title">Middle Level</div>
+          <div class="gc-desc">Managers, Senior Managers, Team Leads (5–15 yrs)</div>
+          <span class="gc-vp" id="vp-middle-badge">VP: 15%</span>
+        </div>
+        <div class="grade-card" onclick="setGrade('senior')" id="gc-senior">
+          <span class="gc-icon">👑</span>
+          <div class="gc-title">Senior / Top Level</div>
+          <div class="gc-desc">Directors, VPs, CXOs, Business Heads (15+ yrs)</div>
+          <span class="gc-vp" id="vp-senior-badge">VP: 25%</span>
+        </div>
+      </div>
+      <div id="vp-info" style="margin-top:10px;font-size:.78rem;color:#1d4ed8;background:#eff6ff;border-radius:8px;padding:9px 12px;line-height:1.5;"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Pay & Type -->
+  <div class="card">
+    <div class="card-header"><div class="badge">3</div><h2>Pay &amp; Role Details</h2></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="field">
+          <label>Annual Gross Pay (₹)</label>
+          <input type="number" id="gp" placeholder="e.g. 800000" min="0" inputmode="numeric">
+          <span class="hint">Your total annual CTC before deductions</span>
+        </div>
+        <div class="field">
+          <label>Role Type</label>
+          <div class="toggle-group" style="margin-top:2px;">
+            <button id="btn-div" class="active" onclick="setRoleType('division')">🏭 Division / BU</button>
+            <button id="btn-corp" onclick="setRoleType('corporate')">🏢 Corporate Fn</button>
+          </div>
+          <span class="hint" id="role-hint">Sales, Ops, Plant, Manufacturing roles</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Performance -->
+  <div class="card">
+    <div class="card-header"><div class="badge">4</div><h2>Performance Inputs</h2></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="slider-wrap">
+        <div class="slider-header">
+          <label>Company Performance (%)</label>
+          <span class="slider-val" id="cp-val">100%</span>
+        </div>
+        <input type="range" id="cp" min="50" max="130" value="100" step="1" oninput="updateSlider('cp')" style="accent-color:#2563eb;">
+        <div class="slider-marks"><span>50%</span><span>75%</span><span>100%</span><span>115%</span><span>130%</span></div>
+        <div class="perf-zone"></div>
+        <div class="zone-labels"><span style="flex:17">🔴 No pay</span><span style="flex:23">🟡 Partial</span><span style="flex:40">🟢 Full pay</span><span style="flex:20">⭐ Bonus</span></div>
+        <span class="hint warn" id="cp-warn" style="display:none;">⚠ Below 85% — No VP will be paid regardless of individual performance</span>
+        <span class="hint good" id="cp-good" style="display:none;"></span>
+      </div>
+
+      <div class="slider-wrap">
+        <div class="slider-header">
+          <label id="dp-label">Division / BU Performance (%)</label>
+          <span class="slider-val" id="dp-val">100%</span>
+        </div>
+        <input type="range" id="dp" min="50" max="130" value="100" step="1" oninput="updateSlider('dp')" style="accent-color:#8b5cf6;">
+        <div class="slider-marks"><span>50%</span><span>75%</span><span>100%</span><span>115%</span><span>130%</span></div>
+      </div>
+
+      <div class="field">
+        <label>Individual Performance Rating</label>
+        <select id="rating">
+          <option value="">— Select Your Rating —</option>
+          <option value="1">⭕ 1 – Does Not Meet Expectations</option>
+          <option value="2">🟡 2 – Partially Meets Expectations</option>
+          <option value="3">🟢 3 – Meets Expectations (On Track)</option>
+          <option value="4">🔵 4 – Exceeds Expectations</option>
+          <option value="5">⭐ 5 – Outstanding / Exceptional</option>
+        </select>
+        <span class="hint" id="rating-hint">Your annual appraisal rating from your manager</span>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">
+    <span>Calculate My Variable Pay</span><span>→</span>
+  </button>
+
+  <!-- OUTPUT -->
+  <div id="output" style="margin-top:16px;">
+    <div id="result-banner"></div>
+
+    <!-- Market context -->
+    <div class="market-box" id="market-context"></div>
+
+    <!-- Breakdown -->
+    <div class="card">
+      <div class="card-header"><div class="badge green">✓</div><h2>Full Calculation Breakdown</h2></div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table class="table">
+          <thead><tr><th>Parameter</th><th class="val">Value</th></tr></thead>
+          <tbody id="breakdown-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+      <button class="reset-btn" onclick="resetForm()">↺ Recalculate</button>
+      <button class="share-btn" onclick="shareResult()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M16 8A6 6 0 1 1 8 2a6 6 0 0 1 8 6z"/><path d="M16 8l-4 8-4-8"/><line x1="12" y1="16" x2="12" y2="22" stroke="white" stroke-width="2"/></svg>
+        Share Tool
+      </button>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠ Important Disclaimer</strong>
+      This tool provides an <b>indicative estimate</b> based on general market practices and is for educational/informational purposes only. Actual variable pay is determined by your organization's specific policy, performance management system, and management discretion. Figures shown are approximate and do not constitute a guarantee or commitment of any payout.
+    </div>
+  </div>
+
+</div><!-- /tab-calc -->
+
+<!-- ══════════════════════════════
+     TAB 2 — HOW IT WORKS
+══════════════════════════════ -->
+<div class="tab-pane" id="tab-guide">
+
+  <div class="card">
+    <div class="card-header"><div class="badge" style="background:#7c3aed">📖</div><h2>Understanding Variable Pay</h2></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <p style="font-size:.875rem;color:var(--text2);line-height:1.65;">Variable Pay (also called Performance Bonus, Incentive Pay, or At-Risk Pay) is the portion of your compensation that changes based on performance. Unlike fixed salary, it rewards you when the company, your team, and you individually perform well.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- How formula works -->
+  <div class="card">
+    <div class="card-header"><div class="badge" style="background:#0369a1">🔢</div><h2>The Formula — Explained Simply</h2></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+      <div style="background:#f8fafc;border-radius:10px;padding:14px;text-align:center;border:1px solid var(--border);">
+        <div style="font-size:.8rem;color:var(--text3);margin-bottom:6px;">FINAL VARIABLE PAY =</div>
+        <div style="font-size:.95rem;font-weight:700;color:var(--blue);line-height:1.8;">Target VP <span style="color:var(--text3)">×</span> [ (Company Factor <span style="color:var(--text3)">×</span> CP Weight) <span style="color:var(--text3)">+</span> (Div/Fn Factor <span style="color:var(--text3)">×</span> DP Weight) <span style="color:var(--text3)">+</span> (Individual Multiplier <span style="color:var(--text3)">×</span> IP Weight) ]</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="border-left:3px solid #3b82f6;padding:8px 12px;background:#f0f7ff;border-radius:0 8px 8px 0;">
+          <b style="font-size:.8rem;color:#1d4ed8;">🔵 Target VP</b>
+          <p style="font-size:.78rem;color:var(--text2);margin-top:3px;line-height:1.5;">Your Gross Pay × VP% (set by your level: Junior 8–12%, Middle 12–20%, Senior 20–40% depending on industry). This is what you'd earn at 100% performance on all fronts.</p>
+        </div>
+        <div style="border-left:3px solid #8b5cf6;padding:8px 12px;background:#f5f3ff;border-radius:0 8px 8px 0;">
+          <b style="font-size:.8rem;color:#5b21b6;">🟣 Performance Factor Conversion</b>
+          <p style="font-size:.78rem;color:var(--text2);margin-top:3px;line-height:1.5;">Performance % is not used directly. Below 85% = 0. At 100% = 1.0. Between 100–110%, every 1% extra gives 1.25% bonus factor. Above 110%, every 1% gives 1.5% extra. Capped at 125%.</p>
+        </div>
+        <div style="border-left:3px solid #10b981;padding:8px 12px;background:#f0fdf4;border-radius:0 8px 8px 0;">
+          <b style="font-size:.8rem;color:#065f46;">🟢 Individual Multiplier</b>
+          <p style="font-size:.78rem;color:var(--text2);margin-top:3px;line-height:1.5;">Rating 1=0x, Rating 2=0.5x, Rating 3=1x (baseline), Rating 4=1.1–1.2x (exceeds), Rating 5=1.15–1.25x (outstanding). Higher individual performance boosts your share.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Market benchmarks -->
+  <div class="card">
+    <div class="card-header"><div class="badge" style="background:#d97706">📊</div><h2>Market Benchmark VP% by Industry</h2></div>
+    <div class="card-body" style="padding:0;overflow-x:auto;">
+      <table class="table">
+        <thead><tr><th>Industry</th><th class="val">Junior</th><th class="val">Middle</th><th class="val">Senior</th></tr></thead>
+        <tbody>
+          <tr><td>🏭 General / Manufacturing</td><td class="val"><span class="chip chip-blue">8–12%</span></td><td class="val"><span class="chip chip-blue">12–18%</span></td><td class="val"><span class="chip chip-blue">20–35%</span></td></tr>
+          <tr><td>💻 IT / Software</td><td class="val"><span class="chip chip-blue">10–15%</span></td><td class="val"><span class="chip chip-blue">15–25%</span></td><td class="val"><span class="chip chip-blue">25–50%</span></td></tr>
+          <tr><td>🏦 BFSI / Finance</td><td class="val"><span class="chip chip-blue">15–20%</span></td><td class="val"><span class="chip chip-blue">20–40%</span></td><td class="val"><span class="chip chip-blue">40–100%+</span></td></tr>
+          <tr><td>💊 Pharma / Healthcare</td><td class="val"><span class="chip chip-blue">8–12%</span></td><td class="val"><span class="chip chip-blue">12–20%</span></td><td class="val"><span class="chip chip-blue">20–35%</span></td></tr>
+          <tr><td>🛒 FMCG / Retail</td><td class="val"><span class="chip chip-blue">10–15%</span></td><td class="val"><span class="chip chip-blue">15–22%</span></td><td class="val"><span class="chip chip-blue">22–40%</span></td></tr>
+          <tr><td>🏗️ Infra / Construction</td><td class="val"><span class="chip chip-blue">6–10%</span></td><td class="val"><span class="chip chip-blue">10–15%</span></td><td class="val"><span class="chip chip-blue">15–25%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Weightage guide -->
+  <div class="card">
+    <div class="card-header"><div class="badge" style="background:#0369a1">⚖️</div><h2>Weightage Guide</h2></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+      <p style="font-size:.78rem;color:var(--text3);line-height:1.5;">Most organizations split VP into 3 components. Here's how weightages typically vary by level and role type:</p>
+      <table class="table" style="font-size:.77rem;">
+        <thead><tr><th>Level</th><th>Company (CP)</th><th>Division (DP)</th><th>Individual (IP)</th></tr></thead>
+        <tbody>
+          <tr><td>Junior (Division)</td><td class="val">20%</td><td class="val">50%</td><td class="val">30%</td></tr>
+          <tr><td>Middle (Division)</td><td class="val">30%</td><td class="val">45%</td><td class="val">25%</td></tr>
+          <tr><td>Senior (Division)</td><td class="val">40%</td><td class="val">40%</td><td class="val">20%</td></tr>
+          <tr><td>Any (Corporate Fn)</td><td class="val">50%</td><td class="val">30%</td><td class="val">20%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.75rem;color:var(--text3);line-height:1.5;">💡 Senior roles carry more company weight because their decisions directly impact company results. Junior roles lean more on division/team outcomes.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="badge" style="background:#059669">💡</div><h2>Tips to Maximize Your VP</h2></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">
+        <div style="margin-bottom:6px;">🎯 <b>Understand your weightages</b> — Ask HR for your grade's CP/DP/IP split. Knowing where 50% of your bonus comes from helps you focus.</div>
+        <div style="margin-bottom:6px;">📈 <b>Company performance is an override</b> — Below 85% company performance = ₹0 regardless of your rating. This is non-negotiable in most policies.</div>
+        <div style="margin-bottom:6px;">⭐ <b>Push for Rating 4 or 5</b> — The jump from Rating 3 (1.0x) to Rating 4 (1.1–1.2x) can increase your VP by 10–20%.</div>
+        <div style="margin-bottom:6px;">🔑 <b>Ask for your policy document</b> — Every employee has the right to understand how their VP is calculated. Request the VP policy from HR.</div>
+        <div>📅 <b>Understand proration</b> — If you joined mid-year, your VP is typically prorated by months of service. Confirm with HR.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-guide -->
+
+<!-- ══════════════════════════════
+     TAB 3 — AI CHATBOT
+══════════════════════════════ -->
+<div class="tab-pane" id="tab-faq">
+  <div class="chat-wrap">
+    <div class="chat-messages" id="chat-messages"></div>
+    <div>
+      <div class="sug-row" id="sug-row"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ask anything about variable pay…" onkeydown="if(event.key==='Enter')sendChat()" autocomplete="off" autocorrect="off">
+        <button class="send-btn" onclick="sendChat()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="footer">Built for HR professionals &amp; employees · <a href="#">Share on LinkedIn</a></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ══════════ DATA ══════════
+const INDUSTRIES = {
+  general: { label:'General/Manufacturing', vp:{ junior:.10, middle:.15, senior:.25 } },
+  it:      { label:'IT/Software',           vp:{ junior:.12, middle:.20, senior:.35 } },
+  bfsi:    { label:'BFSI/Finance',          vp:{ junior:.18, middle:.30, senior:.50 } },
+  pharma:  { label:'Pharma/Healthcare',     vp:{ junior:.10, middle:.16, senior:.28 } },
+  fmcg:    { label:'FMCG/Retail',           vp:{ junior:.12, middle:.18, senior:.30 } },
+  infra:   { label:'Infra/Construction',    vp:{ junior:.08, middle:.12, senior:.20 } }
+};
+const GRADE_INFO = {
+  junior: { label:'Junior Level', icon:'🌱', desc:'Executives, Associates, Analysts', years:'0–5 yrs' },
+  middle: { label:'Middle Level', icon:'🚀', desc:'Managers, Senior Managers, TLs',   years:'5–15 yrs' },
+  senior: { label:'Senior/Top Level', icon:'👑', desc:'Directors, VPs, CXOs',         years:'15+ yrs' }
+};
+const WEIGHTAGES = {
+  division: { junior:{cp:.20,dp:.50,ip:.30}, middle:{cp:.30,dp:.45,ip:.25}, senior:{cp:.40,dp:.40,ip:.20} },
+  corporate: { junior:{cp:.50,dp:.30,ip:.20}, middle:{cp:.50,dp:.30,ip:.20}, senior:{cp:.50,dp:.30,ip:.20} }
+};
+const MARKET_RANGES = {
+  general:{ junior:'8–12%', middle:'12–18%', senior:'20–35%' },
+  it:     { junior:'10–15%', middle:'15–25%', senior:'25–50%' },
+  bfsi:   { junior:'15–20%', middle:'20–40%', senior:'40–100%+' },
+  pharma: { junior:'8–12%', middle:'12–20%', senior:'20–35%' },
+  fmcg:   { junior:'10–15%', middle:'15–22%', senior:'22–40%' },
+  infra:  { junior:'6–10%', middle:'10–15%', senior:'15–25%' }
+};
+
+let selIndustry = 'general';
+let selGrade    = 'junior';
+let roleType    = 'division';
+let chatHistory = [];
+
+// ══════════ SELECTORS ══════════
+function setIndustry(ind) {
+  selIndustry = ind;
+  document.querySelectorAll('.ind-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ind-'+ind).classList.add('active');
+  refreshGradeBadges(); updateVPInfo();
+}
+function setGrade(g) {
+  selGrade = g;
+  document.querySelectorAll('.grade-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('gc-'+g).classList.add('active');
+  updateVPInfo();
+}
+function setRoleType(t) {
+  roleType = t;
+  document.getElementById('btn-div').classList.toggle('active', t==='division');
+  document.getElementById('btn-corp').classList.toggle('active', t==='corporate');
+  document.getElementById('dp-label').textContent = t==='corporate' ? 'Function / Dept Performance (%)' : 'Division / BU Performance (%)';
+  document.getElementById('role-hint').textContent = t==='corporate'
+    ? 'HR, Finance, Legal, IT, Admin roles' : 'Sales, Ops, Plant, Manufacturing roles';
+}
+function refreshGradeBadges() {
+  ['junior','middle','senior'].forEach(g=>{
+    const pct = (INDUSTRIES[selIndustry].vp[g]*100).toFixed(0);
+    document.getElementById('vp-'+g+'-badge').textContent = 'VP: '+pct+'%';
+  });
+}
+function updateVPInfo() {
+  const pct = (INDUSTRIES[selIndustry].vp[selGrade]*100).toFixed(0);
+  const ind = INDUSTRIES[selIndustry].label;
+  const info = GRADE_INFO[selGrade];
+  const range = MARKET_RANGES[selIndustry][selGrade];
+  document.getElementById('vp-info').innerHTML =
+    `<b>${info.icon} ${info.label}</b> in <b>${ind}</b>: Market VP% is typically <b>${range}</b> of Annual Gross Pay. This tool uses <b>${pct}%</b> as the midpoint for calculation.`;
+}
+
+// ══════════ SLIDERS ══════════
+function updateSlider(id) {
+  const v = parseInt(document.getElementById(id).value);
+  document.getElementById(id+'-val').textContent = v+'%';
+  // Update slider fill
+  const pct = ((v-50)/80*100).toFixed(1);
+  document.getElementById(id).style.background =
+    `linear-gradient(to right,#2563eb 0%,#2563eb ${pct}%,#e2e8f0 ${pct}%,#e2e8f0 100%)`;
+  if(id==='cp'){
+    const warn = document.getElementById('cp-warn');
+    const good = document.getElementById('cp-good');
+    if(v<85){warn.style.display='block';good.style.display='none';}
+    else if(v>100){warn.style.display='none';good.style.display='block';
+      good.textContent='✅ Company performance above target — payout multiplier applied!';}
+    else{warn.style.display='none';good.style.display='none';}
+  }
+}
+
+// ══════════ HELPERS ══════════
+function fmt(n){ return '₹'+Math.round(n).toLocaleString('en-IN'); }
+function fmtPct(n){ return (n*100).toFixed(2)+'%'; }
+function chipColor(f){ return f===0?'chip-red':f>=1.0?'chip-green':'chip-amber'; }
+function bannerColor(p){ return p===0?'red':p>=100?'green':'amber'; }
+
+function perfFactor(p){
+  if(p<85) return 0;
+  if(p<=100) return p/100;
+  if(p<=110) return (100+(p-100)*1.25)/100;
+  return Math.min((112.5+(p-110)*1.5)/100, 1.25);
+}
+function ipMultiplier(r){
+  r=parseInt(r);
+  if(r===1) return 0; if(r===2) return 0.5; if(r===3) return 1.0;
+  // Simplified for public: middle grades used as base
+  if(r===4) return selGrade==='junior'?1.20:selGrade==='middle'?1.15:1.10;
+  if(r===5) return selGrade==='junior'?1.25:selGrade==='middle'?1.20:1.15;
+}
+function ratingLabel(r){ return ['','Does Not Meet','Partially Meets','Meets Expectations','Exceeds Expectations','Outstanding'][r]; }
+function row(l,v,chip){
+  let vh=chip!=null?`<span class="chip ${chipColor(chip)}">${v}</span>`:`<strong>${v}</strong>`;
+  return `<tr><td>${l}</td><td class="val">${vh}</td></tr>`;
+}
+function sectRow(l){ return `<tr class="sect-row"><td colspan="2">${l}</td></tr>`; }
+
+// ══════════ CALCULATE ══════════
+function calculate(){
+  const gp = parseFloat(document.getElementById('gp').value);
+  const cpVal = parseInt(document.getElementById('cp').value);
+  const dpVal = parseInt(document.getElementById('dp').value);
+  const rating = document.getElementById('rating').value;
+
+  if(!gp||gp<=0) return alert('Please enter your Annual Gross Pay.');
+  if(!rating)    return alert('Please select your Performance Rating.');
+
+  const vpPctVal = INDUSTRIES[selIndustry].vp[selGrade];
+  const targetVP = gp * vpPctVal;
+
+  if(cpVal < 85){ showZero(gp, vpPctVal, targetVP, cpVal); return; }
+
+  const cpFactor = perfFactor(cpVal);
+  const dpFactor = perfFactor(dpVal);
+  const ipMult   = ipMultiplier(rating);
+  const wt       = WEIGHTAGES[roleType][selGrade];
+  let finalFactor= Math.min((cpFactor*wt.cp)+(dpFactor*wt.dp)+(ipMult*wt.ip), 1.25);
+  const finalVP  = targetVP * finalFactor;
+  const earnedPct= (finalFactor*100).toFixed(1);
+  const dpLabel  = roleType==='corporate' ? 'Function' : 'Division/BU';
+  const indLabel = INDUSTRIES[selIndustry].label;
+  const gradeLabel=GRADE_INFO[selGrade].label;
+
+  // Build rows
+  const rows=[];
+  rows.push(sectRow('📋 Step 1 — Your Profile'));
+  rows.push(row('Industry',indLabel));
+  rows.push(row('Level',`${GRADE_INFO[selGrade].icon} ${gradeLabel}`));
+  rows.push(row('Role Type',roleType==='corporate'?'🏢 Corporate Function':'🏭 Division / Business Unit'));
+  rows.push(row('Annual Gross Pay',fmt(gp)));
+
+  rows.push(sectRow('🎯 Step 2 — Target Variable Pay'));
+  rows.push(row(`VP % (${gradeLabel} · ${indLabel})`,(vpPctVal*100).toFixed(0)+'%'));
+  const range=MARKET_RANGES[selIndustry][selGrade];
+  rows.push(row('Market Benchmark Range',`<span class="chip chip-blue">${range}</span>`));
+  rows.push(row('Your Target Variable Pay',fmt(targetVP)));
+
+  rows.push(sectRow('⚖️ Step 3 — Weightages'));
+  rows.push(row('Company Performance Weight',(wt.cp*100)+'%'));
+  rows.push(row(`${dpLabel} Performance Weight`,(wt.dp*100)+'%'));
+  rows.push(row('Individual Performance Weight',(wt.ip*100)+'%'));
+  const wtBar=`<div class="wt-bar"><div class="wt-seg" style="flex:${wt.cp};background:#3b82f6"></div><div class="wt-seg" style="flex:${wt.dp};background:#8b5cf6"></div><div class="wt-seg" style="flex:${wt.ip};background:#10b981"></div></div><div style="display:flex;gap:14px;font-size:.68rem;color:#6b7280;margin-top:4px;"><span>🔵 Company</span><span>🟣 ${dpLabel}</span><span>🟢 Individual</span></div>`;
+  rows.push(`<tr><td colspan="2" style="padding:4px 12px 12px;">${wtBar}</td></tr>`);
+
+  rows.push(sectRow('📈 Step 4 — Performance Factor Conversion'));
+  rows.push(row('Company Performance Input',cpVal+'%'));
+  rows.push(row('Company Performance Factor',fmtPct(cpFactor),cpFactor));
+  rows.push(row(`${dpLabel} Performance Input`,dpVal+'%'));
+  rows.push(row(`${dpLabel} Performance Factor`,fmtPct(dpFactor),dpFactor));
+
+  rows.push(sectRow('⭐ Step 5 — Individual Performance'));
+  rows.push(row('Your Rating',`${rating} — ${ratingLabel(parseInt(rating))}`));
+  rows.push(row('Individual Multiplier',fmtPct(ipMult),ipMult));
+
+  rows.push(sectRow('🔢 Step 6 — Final Factor Formula'));
+  rows.push(`<tr><td colspan="2" style="padding:6px 12px 4px;font-size:.73rem;color:#1d4ed8;background:#eff6ff;font-style:italic;">(${fmtPct(cpFactor)} × ${wt.cp*100}%) + (${fmtPct(dpFactor)} × ${wt.dp*100}%) + (${fmtPct(ipMult)} × ${wt.ip*100}%)</td></tr>`);
+  rows.push(row('Final Performance Factor',`<span class="factor-pill ${finalFactor>=1?'chip-green':'chip-amber'}">${fmtPct(finalFactor)}</span>`));
+
+  rows.push(sectRow('💰 Step 7 — Your Variable Pay'));
+  rows.push(row('Final Variable Pay',fmt(finalVP)));
+  rows.push(row('Monthly Equivalent',fmt(finalVP/12)+' / month'));
+  rows.push(row('Earned % of Target VP',earnedPct+'%'));
+
+  document.getElementById('breakdown-rows').innerHTML = rows.join('');
+
+  // Banner
+  const bc=bannerColor(parseFloat(earnedPct));
+  const emoji=bc==='green'?'🎉':bc==='amber'?'📊':'⚠️';
+  document.getElementById('result-banner').innerHTML=`
+    <div class="summary-banner ${bc}">
+      <div class="vp-amount">${fmt(finalVP)}</div>
+      <div class="vp-label">Estimated Variable Pay · ${indLabel}</div>
+      <div class="vp-pct">${emoji} You earned <strong>${earnedPct}%</strong> of your Target VP of ${fmt(targetVP)}</div>
+      <div class="vp-meta">
+        <div class="vp-meta-item"><div class="mval">${fmt(finalVP/12)}</div><div class="mlbl">Monthly Equiv.</div></div>
+        <div class="vp-meta-item"><div class="mval">${(vpPctVal*100).toFixed(0)}%</div><div class="mlbl">VP % Applied</div></div>
+        <div class="vp-meta-item"><div class="mval">${fmtPct(finalFactor)}</div><div class="mlbl">Final Factor</div></div>
+      </div>
+    </div>`;
+
+  // Market context
+  const range2=MARKET_RANGES[selIndustry][selGrade];
+  document.getElementById('market-context').innerHTML=`
+    <h4>📊 Market Context — ${gradeLabel} · ${indLabel}</h4>
+    <div class="market-row"><span class="ml">Industry benchmark VP range</span><span class="mr">${range2} of GP</span></div>
+    <div class="market-row"><span class="ml">Your Target VP (midpoint used)</span><span class="mr">${(vpPctVal*100).toFixed(0)}% → ${fmt(targetVP)}</span></div>
+    <div class="market-row"><span class="ml">Your Final VP achieved</span><span class="mr">${fmt(finalVP)} (${earnedPct}% of target)</span></div>
+    <div class="market-row"><span class="ml">To hit max payout (125%)</span><span class="mr">Need factor ≥ 1.25 → ${fmt(targetVP*1.25)}</span></div>`;
+
+  document.getElementById('output').style.display='block';
+  document.getElementById('output').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function showZero(gp,vpPctVal,targetVP,cpVal){
+  document.getElementById('result-banner').innerHTML=`
+    <div class="zero-notice">
+      <h3>⛔ No Variable Pay Eligible</h3>
+      <p>Company Performance is <strong>${cpVal}%</strong>, which is below the <strong>85% threshold</strong>.</p>
+      <p style="margin-top:8px;">As per standard policy, no variable pay is payable when company-wide performance is below 85% — regardless of your individual rating.</p>
+      <p style="margin-top:10px;font-size:.77rem;color:#991b1b;">Your notional Target VP would have been ${fmt(targetVP)} at ${(vpPctVal*100).toFixed(0)}% of ${fmt(gp)}</p>
+    </div>`;
+  document.getElementById('breakdown-rows').innerHTML=`
+    ${sectRow('Threshold Override')}
+    <tr><td>Annual Gross Pay</td><td class="val"><strong>${fmt(gp)}</strong></td></tr>
+    <tr><td>VP % for Level</td><td class="val"><strong>${(vpPctVal*100).toFixed(0)}%</strong></td></tr>
+    <tr><td>Notional Target VP</td><td class="val"><strong>${fmt(targetVP)}</strong></td></tr>
+    <tr><td>Company Performance</td><td class="val"><span class="chip chip-red">${cpVal}% (below 85%)</span></td></tr>
+    <tr><td>Threshold Override</td><td class="val"><span class="chip chip-red">YES — Zero VP</span></td></tr>
+    <tr><td>Final Variable Pay</td><td class="val"><span class="chip chip-red">₹ 0</span></td></tr>`;
+  document.getElementById('market-context').innerHTML='';
+  document.getElementById('output').style.display='block';
+  document.getElementById('output').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function resetForm(){
+  document.getElementById('output').style.display='none';
+  document.getElementById('gp').value='';
+  document.getElementById('rating').value='';
+  document.getElementById('cp').value=100; updateSlider('cp');
+  document.getElementById('dp').value=100; updateSlider('dp');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function shareResult(){
+  const url=window.location.href;
+  const text='Check out this free Variable Pay Calculator for employees! Instantly see how your bonus is calculated with full transparency. No login, no data stored.\n\n'+url;
+  if(navigator.share){navigator.share({title:'Variable Pay Calculator',text:text,url:url});}
+  else{navigator.clipboard.writeText(url).then(()=>alert('Link copied! Share it on LinkedIn 🚀'));}
+}
+
+// ══════════ TAB ══════════
+function switchTab(t){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('tabnav-'+t).classList.add('active');
+  if(t==='faq'&&document.getElementById('chat-messages').children.length===0) initChat();
+}
+
+// ══════════ CHATBOT ══════════
+const SYSTEM = `You are a friendly, expert HR assistant who specializes in variable pay and performance bonuses. You answer questions from both employees trying to understand their bonus, and HR professionals setting up VP policies.
+
+Key knowledge:
+- Variable pay / bonus is typically 8–50% of gross pay depending on industry and level
+- Junior Level (Executives, Analysts, Associates, 0-5 yrs): ~8-15% VP target
+- Middle Level (Managers, Senior Managers, Team Leads, 5-15 yrs): ~12-25% VP target  
+- Senior/Top Level (Directors, VPs, CXOs, 15+ yrs): ~20-50%+ VP target
+- BFSI sector has highest VP% (bonuses can exceed 100% at senior levels)
+- IT sector: moderate to high, FMCG/Manufacturing: moderate
+- Performance factor conversion: <85% = 0, 85-100% = linear, 100-110% = 100%+(excess×1.25), >110% = 112.5%+(excess×1.5), capped at 125%
+- 3 components: Company Performance (CP), Division/Function Performance (DP/FP), Individual Performance (IP)
+- Weightages vary by level: juniors have more DP weight (50%), seniors have more CP weight (40%)
+- Corporate function employees (HR, Finance, Legal) have higher CP weight (50%) as they don't have a direct division
+- Individual rating multipliers: 1=0x, 2=0.5x, 3=1x, 4=1.1-1.2x, 5=1.15-1.25x
+- The 85% company performance threshold is a common policy safeguard — protects company cashflow
+- VP is typically paid annually after year-end close (March-May for April-March FY in India)
+- Proration: if you joined mid-year, VP is prorated by months of eligible service
+- Always distinguish between "target VP" (what you'd get at 100% on all) vs "actual VP" (what formula gives)
+
+Be conversational, helpful, and use examples when explaining numbers. Keep answers under 5 sentences unless a detailed breakdown is needed. If unsure about a company-specific detail, say they should confirm with their HR.`;
+
+const SUGGESTIONS = [
+  "What is variable pay and how does it differ from salary?",
+  "Why does company performance below 85% give me zero bonus?",
+  "How can I maximize my variable pay?",
+  "Which industry pays the highest bonus %?",
+  "What does the 1.25x cap on performance factor mean?",
+  "I got Rating 4 — what multiplier applies to me?",
+  "Why do Corporate Function employees have different weightages?",
+  "When is variable pay usually paid out in India?"
+];
+
+function initChat(){
+  addBot(`👋 Hi! I'm your <b>Variable Pay Expert Assistant</b>.<br><br>I can help you understand how bonuses are calculated, what affects your payout, and how your industry compares. I'm here for both <span class="tag">employees</span> and <span class="tag">HR professionals</span>.<br><br>What would you like to know?`);
+  renderSuggestions();
+}
+function addBot(html){
+  const d=document.createElement('div');d.className='msg bot';
+  d.innerHTML=`<div class="avatar">🤖</div><div class="bubble">${html}</div>`;
+  document.getElementById('chat-messages').appendChild(d);scrollChat();
+}
+function addUser(text){
+  const d=document.createElement('div');d.className='msg user';
+  d.innerHTML=`<div class="bubble">${text}</div>`;
+  document.getElementById('chat-messages').appendChild(d);scrollChat();
+}
+function showTyping(){
+  const d=document.createElement('div');d.className='msg bot';d.id='typing';
+  d.innerHTML=`<div class="avatar">🤖</div><div class="typing-dot"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  document.getElementById('chat-messages').appendChild(d);scrollChat();
+}
+function removeTyping(){ const t=document.getElementById('typing');if(t)t.remove(); }
+function scrollChat(){ const c=document.getElementById('chat-messages');setTimeout(()=>c.scrollTop=c.scrollHeight,50); }
+function renderSuggestions(){
+  document.getElementById('sug-row').innerHTML=SUGGESTIONS.slice(0,4).map(q=>
+    `<button class="sug-btn" onclick="askQ('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('');
+}
+async function askQ(q){ document.getElementById('chat-input').value=q; await sendChat(); }
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const text=inp.value.trim(); if(!text) return;
+  inp.value=''; document.getElementById('sug-row').innerHTML='';
+  addUser(text); chatHistory.push({role:'user',content:text}); showTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYSTEM,messages:chatHistory})
+    });
+    const data=await res.json(); removeTyping();
+    if(data.content&&data.content[0]){
+      const reply=data.content[0].text;
+      chatHistory.push({role:'assistant',content:reply});
+      const html=reply
+        .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\*(.*?)\*/g,'<i>$1</i>')
+        .replace(/\n\n/g,'<br><br>').replace(/\n- /g,'<br>• ').replace(/\n/g,'<br>');
+      addBot(html);
+    } else { addBot('Sorry, I had trouble with that. Please try again!'); }
+  } catch(e){ removeTyping(); addBot('⚠️ Connection issue. Please check your internet and try again.'); }
+  if(chatHistory.length<=4) renderSuggestions();
+}
+
+// ══════════ INIT ══════════
+refreshGradeBadges();
+updateVPInfo();
+updateSlider('cp');
+updateSlider('dp');
+</script>
+</body>
+</html>
